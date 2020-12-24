@@ -100,7 +100,7 @@ love.update = (dt) {
       love.audio.play(sounds.eat)
       reset_food()
     }
-    food.y += 5
+    food.y += 10 * (dt * 50)
   }
 }
 love.mousemoved = (x) {
