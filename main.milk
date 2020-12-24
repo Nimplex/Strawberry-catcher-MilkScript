@@ -1,0 +1,114 @@
+#import "basic"
+#import "math"
+#import "love"
+
+food = {}
+mouth = {}
+screen = {}
+sounds = {}
+font = ""
+alive = 0
+timer = 0
+score = 0
+
+reset = () {
+  foodImage = love.graphics.newImage("assets/strawberry.png")
+  mouthImage = love.graphics.newImage("assets/mouth.png")
+  fontFile = love.graphics.newFont("assets/Acme-Regular.ttf", 40)
+  sounds = {
+    tick: love.audio.newSource("assets/tick.wav", "static")
+    eat: love.audio.newSource("assets/eat.wav", "static")
+  }
+  screen = {
+    width: 1280
+    height: 720
+  }
+  food = {
+    image: foodImage
+    height: foodImage->getHeight()
+    width: foodImage->getWidth()
+    x: 0
+    y: 0
+  }
+  mouth = {
+    image: mouthImage
+    height: mouthImage->getHeight()
+    width: mouthImage->getWidth()
+    x: 0
+    y: 0
+  }
+
+  food.x = (screen.width / 2) - food.width
+  food.y = 0 - food.height
+  mouth.x = (screen.width / 2) - mouth.width
+  mouth.y = screen.height - mouth.height
+  font = fontFile
+  alive = 0
+  timer = 5
+  score = 0
+}
+reset_food = () {
+  food.y = 0 - food.height
+  food.x = random(food.width, screen.width - food.width)
+}
+love.load = () {
+  reset()
+  love.window.setMode(screen.width, screen.height, { resizable: false, vsync: true })
+  love.window.setIcon(love.image.newImageData("assets/strawberry.png"))
+  love.window.setTitle("Strawberry Catcher remake, made by Nimplex.")
+  randomize_seed(time())
+}
+love.update = (dt) {
+  if alive == 0 && timer <= 3 && timer > 0 {
+    timer -= 1
+    love.audio.play(sounds.tick)
+    love.timer.sleep(1)
+  } else if timer <= 5 && timer >= 3{
+    timer -= 1
+  } else if timer == 0 && alive == 0 {
+    alive = 1
+  } 
+
+  if alive == 1 {
+    if food.y >= screen.height reset_food()
+    else if food.x < mouth.x + mouth.width &&
+      food.x + food.width > mouth.x &&
+      food.y < mouth.y + mouth.height &&
+      food.y + food.height > mouth.y 
+    {
+      score += 1
+      love.audio.play(sounds.eat)
+      reset_food()
+    }
+    food.y += 5
+  }
+}
+love.mousemoved = (x) {
+  if alive == 1 {
+    if x > screen.width - mouth.width + (mouth.width / 2) return
+    else if x < 0 + (mouth.width / 2) return
+    else mouth.x = x - (mouth.width / 2)
+  }
+}
+love.keypressed = () {
+  if alive == 1 { 
+    alive = 2
+  }
+  else if alive == 2 {
+    alive = 1
+  }
+}
+love.draw = () {
+  if alive == 0 {
+    str = to_string(timer)
+    love.graphics.print(str, font, (screen.width / 2) - font->getWidth(str), (screen.height / 2) - font->getHeight(str))
+  } else if alive == 1 {
+    str = to_string(score)
+    love.graphics.print(str, font, (screen.width / 2) - font->getWidth(str), 40)
+    love.graphics.draw(mouth.image, mouth.x, mouth.y)
+    love.graphics.draw(food.image, food.x, food.y)
+  } else if alive == 2 {
+    str = "PAUSED"
+    love.graphics.print(str, font, (screen.width / 2) - font->getWidth(str) / 2, (screen.height / 2) - font->getHeight(str) / 2)
+  }
+}
