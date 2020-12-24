@@ -10,6 +10,9 @@ font = ""
 alive = 0
 timer = 0
 score = 0
+br = 50
+bg = 50
+bb = 50
 
 reset = () {
   foodImage = love.graphics.newImage("assets/strawberry.png")
@@ -46,6 +49,9 @@ reset = () {
   alive = 0
   timer = 5
   score = 0
+  br = 30
+  bg = 30
+  bb = 30
 }
 reset_food = () {
   food.y = 0 - food.height
@@ -99,12 +105,13 @@ love.keypressed = () {
   }
 }
 love.draw = () {
+  love.graphics.setBackgroundColor(br/255, bg/255, bb/255)
   if alive == 0 {
     str = to_string(timer)
     love.graphics.print(str, font, (screen.width / 2) - font->getWidth(str), (screen.height / 2) - font->getHeight(str))
   } else if alive == 1 {
-    str = to_string(score)
-    love.graphics.print(str, font, (screen.width / 2) - font->getWidth(str), 40)
+    str = "Points: "..to_string(score)
+    love.graphics.print(str, font, (screen.width / 2) - font->getWidth(str) / 2, 40)
     love.graphics.draw(mouth.image, mouth.x, mouth.y)
     love.graphics.draw(food.image, food.x, food.y)
   } else if alive == 2 {
