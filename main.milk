@@ -1,4 +1,4 @@
-#import "basic"
+#import "std"
 #import "math"
 #import "love"
 
@@ -57,14 +57,14 @@ reset = () {
 }
 reset_food = () {
   food.y = 0 - food.height
-  food.x = random(food.width, screen.width - food.width)
+  food.x = math.random(food.width, screen.width - food.width)
 }
 love.load = () {
   reset()
   love.window.setMode(screen.width, screen.height, { resizable: false, vsync: true })
   love.window.setIcon(love.image.newImageData("assets/strawberry.png"))
   love.window.setTitle("Strawberry Catcher remake, made by Nimplex.")
-  randomize_seed(time())
+  math.randomize_seed(std.time())
 }
 love.update = (dt) {
   if flash {
@@ -121,10 +121,10 @@ love.keypressed = () {
 love.draw = () {
   love.graphics.setBackgroundColor(br/255, bg/255, bb/255)
   if alive == 0 {
-    str = to_string(timer)
+    str = std.to_string(timer)
     love.graphics.print(str, font, (screen.width / 2) - font->getWidth(str), (screen.height / 2) - font->getHeight(str))
   } else if alive == 1 {
-    str = "Points: "..to_string(score)
+    str = "Points: "..std.to_string(score)
     love.graphics.print(str, font, (screen.width / 2) - font->getWidth(str) / 2, 40)
     love.graphics.draw(mouth.image, mouth.x, mouth.y)
     love.graphics.draw(food.image, food.x, food.y)
